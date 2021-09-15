@@ -1,0 +1,46 @@
+version: "3"
+
+services:
+  rabbitmq:
+    image: rabbitmq:3.9-management-alpine
+    container_name: "rabbitmq"
+    ports:
+      - 5672:5672
+      - 15672:15672
+    networks:
+      - rabbitmq_network
+
+  backend:
+    depends_on:
+      - rabbitmq
+    container_name: "alert-backend"
+    build:
+      context: ./backend
+    command: bash -c "service cron start && python manage.py runserver 0.0.0.0:8000"
+    ports:
+      - 8000:8000
+    networks:
+      - rabbitmq_network
+
+  frontend:
+    depends_on:
+      - backend
+    container_name: "alert-frontend"
+    build:
+      context: ./frontend
+    ports:
+      - "3000:3000"
+
+  insights:
+    depends_on:
+      - frontend
+    container_name: "insights"
+    build:
+      context: ./insights
+    ports:
+      - "5000:5000"
+    networks:
+      - rabbitmq_network
+networks:
+  rabbitmq_network:
+    driver: bridge
