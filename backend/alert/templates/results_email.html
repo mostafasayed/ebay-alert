@@ -1,0 +1,27 @@
+<html>
+  <head> </head>
+
+  <body>
+    <p>
+      Based in your search term: {{ alert.search_term }} with frequency of
+      :{{alert.interval_time}} Mins
+    </p>
+    {% if results %}
+    <table>
+      <tr>
+        <th>Title</th>
+        <th>Price</th>
+      </tr>
+      {% for result in results %}
+      <tr>
+        <td>{{ result.title }}</td>
+        <td>{{ result.sellingStatus.currentPrice.value }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+
+    {%else %}
+    <p style="color: red">There is no result.</p>
+    {%endif %}
+  </body>
+</html>
